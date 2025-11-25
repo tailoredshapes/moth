@@ -385,6 +385,72 @@ fn test_issue_sorting_by_priority() {
 
 #[test]
 #[serial]
+fn test_show_no_args_shows_current() {
+    let _temp = setup_test_env();
+    cmd::init::run().unwrap();
+
+    cmd::new::run("Test issue", None, true, false).unwrap();
+
+    let config = Config::load().unwrap();
+    let store = Store::new(config).unwrap();
+    let issues = store.all_issues().unwrap();
+    let id = issues[0].id.clone();
+
+    cmd::start::run(&id).unwrap();
+
+    let result = cmd::show::run(None);
+    assert!(result.is_ok());
+}
+
+#[test]
+#[serial]
+fn test_show_no_args_no_current() {
+    let _temp = setup_test_env();
+    cmd::init::run().unwrap();
+
+    let result = cmd::show::run(None);
+    assert!(result.is_err());
+    assert!(result.unwrap_err().to_string().contains("No current issue"));
+}
+
+#[test]
+#[serial]
+fn test_done_no_args_finishes_current() {
+    let _temp = setup_test_env();
+    cmd::init::run().unwrap();
+
+    cmd::new::run("Test issue", None, true, false).unwrap();
+
+    let config = Config::load().unwrap();
+    let store = Store::new(config).unwrap();
+    let issues = store.all_issues().unwrap();
+    let id = issues[0].id.clone();
+
+    cmd::start::run(&id).unwrap();
+
+    let result = cmd::done::run(None);
+    assert!(result.is_ok());
+
+    let config = Config::load().unwrap();
+    let store = Store::new(config).unwrap();
+    let done_issues = store.issues_by_status("done").unwrap();
+    assert_eq!(done_issues.len(), 1);
+    assert_eq!(done_issues[0].id, id);
+}
+
+#[test]
+#[serial]
+fn test_done_no_args_no_current() {
+    let _temp = setup_test_env();
+    cmd::init::run().unwrap();
+
+    let result = cmd::done::run(None);
+    assert!(result.is_err());
+    assert!(result.unwrap_err().to_string().contains("No current issue"));
+}
+
+#[test]
+#[serial]
 fn test_new_respects_no_edit_on_new_config() {
     let _temp = setup_test_env();
     cmd::init::run().unwrap();
