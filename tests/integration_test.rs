@@ -440,6 +440,42 @@ fn test_done_no_args_finishes_current() {
 
 #[test]
 #[serial]
+fn test_done_uses_current_file_over_latest() {
+    let _temp = setup_test_env();
+    cmd::init::run().unwrap();
+
+    cmd::new::run("Alpha issue", None, true, false, None).unwrap();
+    cmd::new::run("Beta issue", None, true, false, None).unwrap();
+
+    let config = Config::load().unwrap();
+    let store = Store::new(config).unwrap();
+    let ready = store.issues_by_status("ready").unwrap();
+    let alpha = ready
+        .iter()
+        .find(|issue| issue.title() == "Alpha Issue")
+        .expect("alpha issue");
+    let beta = ready
+        .iter()
+        .find(|issue| issue.title() == "Beta Issue")
+        .expect("beta issue");
+
+    cmd::start::run(&alpha.id).unwrap();
+    cmd::mv::run(&beta.id, "doing").unwrap();
+
+    cmd::done::run(None).unwrap();
+
+    let config = Config::load().unwrap();
+    let store = Store::new(config).unwrap();
+    let done_issues = store.issues_by_status("done").unwrap();
+    let doing_issues = store.issues_by_status("doing").unwrap();
+    assert_eq!(done_issues.len(), 1);
+    assert_eq!(done_issues[0].id, alpha.id);
+    assert_eq!(doing_issues.len(), 1);
+    assert_eq!(doing_issues[0].id, beta.id);
+}
+
+#[test]
+#[serial]
 fn test_done_no_args_no_current() {
     let _temp = setup_test_env();
     cmd::init::run().unwrap();

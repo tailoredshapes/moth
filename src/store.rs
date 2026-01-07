@@ -176,6 +176,10 @@ impl Store {
     }
 
     pub fn current(&self) -> Result<Option<Issue>> {
+        if let Some(issue) = self.current_from_file()? {
+            return Ok(Some(issue));
+        }
+
         let doing_status = self
             .config
             .get_status("doing")
@@ -211,6 +215,38 @@ impl Store {
         }
 
         Ok(latest_issue)
+    }
+
+    fn current_from_file(&self) -> Result<Option<Issue>> {
+        let current_file = self.config.moth_dir.join(".current");
+        if !current_file.exists() {
+            return Ok(None);
+        }
+
+        let current_id = fs::read_to_string(&current_file)
+            .with_context(|| format!("Failed to read {}", current_file.display()))?;
+        let current_id = current_id.trim();
+        if current_id.is_empty() {
+            return Ok(None);
+        }
+
+        let issue = match self.find(current_id) {
+            Ok(issue) => issue,
+            Err(e) => {
+                eprintln!("Warning: {}", e);
+                return Ok(None);
+            }
+        };
+
+        if issue.status != "doing" {
+            eprintln!(
+                "Warning: current issue {} is in status '{}'",
+                issue.id, issue.status
+            );
+            return Ok(None);
+        }
+
+        Ok(Some(issue))
     }
 }
 
