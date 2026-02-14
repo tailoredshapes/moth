@@ -3,282 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moth - Simple File-Based Issue Tracker</title>
+    <title>Moth — File-Based Issue Tracker</title>
+    <meta name="description" content="A git-style, file-based issue tracker. Issues are markdown files. No database, no external service.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --warm-50:  #fafaf9;
+            --warm-100: #f5f5f4;
+            --warm-150: #ededeb;
+            --warm-200: #e7e5e4;
+            --warm-300: #d6d3d1;
+            --warm-400: #a8a29e;
+            --warm-500: #78716c;
+            --warm-600: #57534e;
+            --warm-700: #44403c;
+            --warm-800: #292524;
+            --warm-900: #1c1917;
+            --warm-950: #0f0e0d;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: #f5f5f5;
+            color: var(--warm-800);
+            background: var(--warm-50);
+            -webkit-font-smoothing: antialiased;
         }
 
+        .grain::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.035;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: 256px 256px;
+        }
+
+        .grain-heavy::after { opacity: 0.05; }
+
+        .wrap { max-width: 640px; margin: 0 auto; padding: 0 24px; }
+
+        /* Hero */
         .hero {
-            background: #e8e4db;
-            color: #2d2d2d;
-            padding: 80px 20px;
-            text-align: center;
+            position: relative;
+            background: var(--warm-950);
+            color: var(--warm-100);
+            padding: 96px 24px 80px;
         }
 
         .hero .logo {
-            max-width: 300px;
-            margin: 0 auto 30px;
+            max-width: 200px;
             display: block;
+            margin-bottom: 32px;
+            opacity: 0.9;
         }
 
         .hero h1 {
-            font-size: 3.5em;
-            margin-bottom: 20px;
-            font-weight: 700;
+            font-size: 2.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            line-height: 1.15;
         }
 
         .hero .tagline {
-            font-size: 1.5em;
-            margin-bottom: 40px;
-            opacity: 0.95;
+            margin-top: 16px;
+            font-size: 1.05rem;
+            color: var(--warm-400);
+            max-width: 480px;
+            line-height: 1.6;
         }
 
-        .hero .cta {
-            display: inline-block;
-            background: #2d2d2d;
-            color: #e8e4db;
-            padding: 15px 40px;
+        .hero-links {
+            margin-top: 32px;
+            display: flex;
+            gap: 24px;
+            font-size: 0.875rem;
+        }
+
+        .hero-links a {
+            color: var(--warm-400);
             text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1em;
-            transition: transform 0.2s, box-shadow 0.2s;
+            border-bottom: 1px solid var(--warm-700);
+            padding-bottom: 2px;
+            transition: color 0.2s, border-color 0.2s;
         }
 
-        .hero .cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
+        .hero-links a:first-child { color: var(--warm-200); border-color: var(--warm-600); }
+        .hero-links a:hover { color: var(--warm-200); border-color: var(--warm-400); }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+        /* Sections */
+        section { position: relative; padding: 80px 24px; }
 
-        .section {
-            padding: 60px 20px;
-            background: white;
-        }
-
-        .section:nth-child(even) {
-            background: #fafafa;
-        }
-
-        .section h2 {
-            font-size: 2.5em;
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--warm-400);
             margin-bottom: 20px;
-            text-align: center;
-            color: #2d2d2d;
         }
 
-        .section p {
-            font-size: 1.2em;
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto 40px;
-            color: #666;
+        section h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
         }
 
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
+        section > .wrap > p {
+            color: var(--warm-500);
+            margin-top: 12px;
+            max-width: 480px;
+            line-height: 1.7;
         }
+
+        .divider { max-width: 640px; margin: 0 auto; padding: 0 24px; }
+        .divider hr { border: none; border-top: 1px solid var(--warm-200); }
+
+        /* Feature list */
+        .features { margin-top: 48px; }
 
         .feature {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            transition: transform 0.2s;
-        }
-
-        .feature:hover {
-            transform: translateY(-5px);
+            border-left: 2px solid var(--warm-200);
+            padding-left: 24px;
+            margin-bottom: 36px;
         }
 
         .feature h3 {
-            color: #2d2d2d;
-            font-size: 1.5em;
-            margin-bottom: 15px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--warm-800);
         }
 
         .feature p {
-            text-align: left;
-            font-size: 1em;
-            color: #666;
+            margin-top: 6px;
+            font-size: 0.875rem;
+            color: var(--warm-500);
+            line-height: 1.6;
+            max-width: 480px;
         }
 
-        .code-example {
-            background: #282c34;
-            color: #abb2bf;
-            padding: 30px;
-            border-radius: 10px;
+        /* Code blocks */
+        .code-block {
+            background: var(--warm-900);
+            color: var(--warm-300);
+            padding: 24px;
+            border-radius: 4px;
             overflow-x: auto;
-            margin: 40px auto;
-            max-width: 800px;
+            margin-top: 32px;
+            font-size: 0.85rem;
+            line-height: 1.7;
         }
 
-        .code-example pre {
-            margin: 0;
-            font-family: 'Courier New', monospace;
-            font-size: 0.95em;
+        .code-block pre { margin: 0; font-family: 'SF Mono', 'Fira Code', 'Fira Mono', monospace; }
+        .code-block .comment { color: var(--warm-600); }
+        .code-block .command { color: var(--warm-200); }
+
+        /* Structure diagram */
+        .structure { margin-top: 32px; }
+        .structure pre {
+            font-family: 'SF Mono', 'Fira Code', 'Fira Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--warm-500);
+            line-height: 1.7;
         }
 
-        .code-example .comment {
-            color: #5c6370;
-        }
-
-        .code-example .command {
-            color: #61afef;
-        }
-
+        /* Philosophy */
         .philosophy {
-            background: #f5f2ed;
-            padding: 40px;
-            border-radius: 10px;
-            margin: 40px auto;
-            max-width: 800px;
-            border-left: 4px solid #2d2d2d;
-        }
-
-        .philosophy h3 {
-            color: #2d2d2d;
-            font-size: 1.8em;
-            margin-bottom: 15px;
+            border-left: 2px solid var(--warm-300);
+            padding-left: 24px;
+            margin-top: 32px;
         }
 
         .philosophy p {
-            text-align: left;
-            font-size: 1.1em;
+            font-size: 0.9rem;
+            color: var(--warm-500);
+            line-height: 1.7;
+            max-width: 520px;
         }
 
-        footer {
-            background: #333;
-            color: white;
-            text-align: center;
-            padding: 40px 20px;
+        /* Tags */
+        .tags { margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .tag {
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            color: var(--warm-500);
+            border: 1px solid var(--warm-200);
+            padding: 4px 12px;
+            border-radius: 2px;
         }
+
+        /* Footer */
+        footer {
+            position: relative;
+            background: var(--warm-950);
+            color: var(--warm-500);
+            padding: 48px 24px;
+        }
+
+        footer .wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        @media (min-width: 640px) {
+            footer .wrap {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: baseline;
+            }
+        }
+
+        footer .name { color: var(--warm-100); font-weight: 500; letter-spacing: -0.01em; }
 
         footer a {
-            color: #e8e4db;
+            color: var(--warm-500);
             text-decoration: none;
+            transition: color 0.2s;
         }
 
-        footer a:hover {
-            text-decoration: underline;
-        }
+        footer a:hover { color: var(--warm-200); }
 
-        .badge {
-            display: inline-block;
-            background: #2d2d2d;
-            color: #e8e4db;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            margin: 0 5px;
+        footer .links { display: flex; gap: 24px; font-size: 0.875rem; }
+
+        footer .bottom {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--warm-800);
+            font-size: 0.75rem;
+            color: var(--warm-700);
         }
     </style>
 </head>
 <body>
-    <div class="hero">
-        <div class="container">
-            <img src="images/moth.png" alt="Moth Logo" class="logo">
+    <div class="hero grain grain-heavy">
+        <div class="wrap">
+            <img src="images/moth.png" alt="Moth" class="logo">
             <h1>Moth</h1>
-            <p class="tagline">A git-style, file-based issue tracker that's simple, transparent, and version-control friendly</p>
-            <a href="https://github.com/tsmarsh/moth" class="cta">View on GitHub</a>
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="container">
-            <h2>Why Moth?</h2>
-            <p>Moth stores your issues as plain markdown files in your repository, making them as easy to manage as your code. No databases, no external services—just simple files that live alongside your project.</p>
-
-            <div class="features">
-                <div class="feature">
-                    <h3>📁 File-Based Storage</h3>
-                    <p>Issues are markdown files stored in <code>.moth/{status}/</code>. Edit them directly or use the CLI.</p>
-                </div>
-                <div class="feature">
-                    <h3>🔄 Git-Friendly</h3>
-                    <p>Everything is plain text, perfect for version control. Track issue changes with git history.</p>
-                </div>
-                <div class="feature">
-                    <h3>⚡ Simple Workflow</h3>
-                    <p>Move issues through customizable statuses with intuitive commands. No complex UI to learn.</p>
-                </div>
-                <div class="feature">
-                    <h3>🎯 Priority Support</h3>
-                    <p>Track issue priority (crit, high, med, low) right in the filename.</p>
-                </div>
-                <div class="feature">
-                    <h3>🔍 Partial ID Matching</h3>
-                    <p>Reference issues with short IDs. No need to type the full identifier.</p>
-                </div>
-                <div class="feature">
-                    <h3>⚙️ Configurable</h3>
-                    <p>Customize statuses, priorities, editor, and ID length to match your workflow.</p>
-                </div>
+            <p class="tagline">A git-style, file-based issue tracker. Issues are markdown files in your repository. No database, no external service.</p>
+            <div class="hero-links">
+                <a href="https://github.com/tailoredshapes/moth">GitHub</a>
+                <a href="https://github.com/tailoredshapes/moth/blob/main/README.md">Documentation</a>
             </div>
         </div>
     </div>
 
-    <div class="section">
-        <div class="container">
-            <h2>Quick Start</h2>
-            <div class="code-example">
-                <pre><span class="comment"># Initialize moth in your project</span>
+    <section class="grain">
+        <div class="wrap">
+            <p class="section-label">Overview</p>
+            <h2>Why Moth</h2>
+            <p>Issues stored as plain markdown files, organised by status. Edit them directly or use the CLI. Everything is plain text, version-controlled alongside your code.</p>
+
+            <div class="features">
+                <div class="feature">
+                    <h3>File-based storage</h3>
+                    <p>Issues live in <code>.moth/{status}/</code> as markdown files. No database to manage, no service to run.</p>
+                </div>
+                <div class="feature">
+                    <h3>Git-native</h3>
+                    <p>Plain text, designed for version control. Track issue changes through git history. Commit hooks auto-prefix messages with the current issue ID.</p>
+                </div>
+                <div class="feature">
+                    <h3>Simple workflow</h3>
+                    <p>Move issues through customisable statuses with single commands. Partial ID matching&mdash;no need to type the full identifier.</p>
+                </div>
+                <div class="feature">
+                    <h3>Priority and severity</h3>
+                    <p>Track severity (crit, high, med, low) and ordering priority. Compact renumbering keeps the backlog tidy.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"><hr></div>
+
+    <section class="grain">
+        <div class="wrap">
+            <p class="section-label">Usage</p>
+            <h2>Quick start</h2>
+            <div class="code-block">
+                <pre><span class="comment"># Initialise moth in your project</span>
 <span class="command">moth init</span>
 
 <span class="comment"># Create a new issue</span>
 <span class="command">moth new</span> "Fix login bug" -p high
 
-<span class="comment"># Create and immediately start working on it</span>
-<span class="command">moth new</span> "Urgent fix" -p crit --start
-
 <span class="comment"># List issues</span>
 <span class="command">moth ls</span>
 
-<span class="comment"># Move issue to "doing"</span>
+<span class="comment"># Start working on an issue</span>
 <span class="command">moth start</span> x7k2m
 
-<span class="comment"># Mark issue as done (or just 'moth done' for current)</span>
+<span class="comment"># Mark as done</span>
 <span class="command">moth done</span> x7k2m
 
-<span class="comment"># Show issue details (or just 'moth show' for current)</span>
+<span class="comment"># Show issue details</span>
 <span class="command">moth show</span> x7k2m</pre>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div class="section">
-        <div class="container">
-            <h2>Philosophy on Story Points</h2>
-            <div class="philosophy">
-                <p>Moth focuses on tracking the number of completed issues rather than story points. This approach is based on research indicating that story point estimates often have significant variance and may not accurately predict delivery timelines. We recommend using issue count as a more reliable metric for measuring team capacity and velocity.</p>
-            </div>
-        </div>
-    </div>
+    <div class="divider"><hr></div>
 
-    <div class="section">
-        <div class="container">
-            <h2>How It Works</h2>
-            <p>Moth creates a simple directory structure in your project:</p>
-            <div class="code-example">
+    <section class="grain">
+        <div class="wrap">
+            <p class="section-label">Structure</p>
+            <h2>How it works</h2>
+            <p>Moth creates a directory structure in your project. Each issue is a markdown file named <code>[id]-[priority]-[title-slug].md</code>.</p>
+            <div class="code-block">
                 <pre>.moth/
 ├── config.yml
 ├── ready/
@@ -289,37 +328,57 @@
 └── done/
     └── b2h8l-low-update-docs.md</pre>
             </div>
-            <p style="margin-top: 30px;">Each issue is a markdown file with a structured filename: <code>[id]-[priority]-[title-slug].md</code></p>
         </div>
-    </div>
+    </section>
 
-    <div class="section">
-        <div class="container">
+    <div class="divider"><hr></div>
+
+    <section class="grain">
+        <div class="wrap">
+            <p class="section-label">Philosophy</p>
+            <h2>On story points</h2>
+            <div class="philosophy">
+                <p>Moth tracks completed issue count rather than story points. Research indicates that point estimates have significant variance and often fail to predict delivery timelines. Issue count is a more reliable metric for measuring team capacity and velocity.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"><hr></div>
+
+    <section class="grain">
+        <div class="wrap">
+            <p class="section-label">Install</p>
             <h2>Installation</h2>
-            <div class="code-example">
+            <div class="code-block">
                 <pre><span class="comment"># Build from source</span>
 <span class="command">cargo build --release</span>
 
-<span class="comment"># The binary will be available at</span>
+<span class="comment"># Binary at</span>
 target/release/moth</pre>
             </div>
-            <p style="margin-top: 30px;">
-                <span class="badge">Rust</span>
-                <span class="badge">CLI</span>
-                <span class="badge">Git-Friendly</span>
-                <span class="badge">Open Source</span>
-            </p>
+            <div class="tags">
+                <span class="tag">Rust</span>
+                <span class="tag">CLI</span>
+                <span class="tag">Git-native</span>
+                <span class="tag">MIT License</span>
+            </div>
         </div>
-    </div>
+    </section>
 
-    <footer>
-        <div class="container">
-            <p>Built with ❤️ by developers who value simplicity</p>
-            <p style="margin-top: 10px;">
-                <a href="https://github.com/tsmarsh/moth">GitHub</a> •
-                <a href="https://github.com/tsmarsh/moth/issues">Report Issues</a> •
-                <a href="https://github.com/tsmarsh/moth/blob/main/README.md">Documentation</a>
-            </p>
+    <footer class="grain grain-heavy">
+        <div class="wrap">
+            <div>
+                <p class="name">Moth</p>
+                <p style="font-size: 0.875rem; margin-top: 4px;">A <a href="https://tailoredshapes.github.io">TailoredShapes</a> project</p>
+            </div>
+            <div class="links">
+                <a href="https://github.com/tailoredshapes/moth">GitHub</a>
+                <a href="https://github.com/tailoredshapes/moth/issues">Issues</a>
+                <a href="https://github.com/tailoredshapes/moth/blob/main/README.md">Docs</a>
+            </div>
+            <div class="bottom" style="width: 100%;">
+                <p>&copy; 2025 TailoredShapes</p>
+            </div>
         </div>
     </footer>
 </body>
