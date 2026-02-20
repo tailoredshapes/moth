@@ -2,6 +2,10 @@
 name = "moth"
 version = "0.1.0"
 edition = "2024"
+description = "Git-style file-based issue tracker. Zero setup, works for humans and LLMs."
+license = "MIT"
+repository = "https://github.com/tailoredshapes/moth"
+homepage = "https://tailoredshapes.github.io/moth/"
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }
