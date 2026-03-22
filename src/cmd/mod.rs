@@ -14,3 +14,4 @@ pub mod rm;
 pub mod severity;
 pub mod show;
 pub mod start;
+pub mod update;

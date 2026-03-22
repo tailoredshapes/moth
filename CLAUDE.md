@@ -91,6 +91,10 @@ echo "Issue description" | moth new "Issue title" --stdin
 # Edit issue content
 moth edit {id}
 
+# Update issue description from stdin (replaces entire content)
+echo "New description" | moth update {id}
+echo "Updated spec" | moth update          # updates current issue
+
 # Delete issue
 moth rm {id}
 

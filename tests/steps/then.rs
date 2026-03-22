@@ -241,3 +241,19 @@ fn hook_does_not_exist(world: &mut MothWorld) {
         hook_path
     );
 }
+
+#[then(expr = "the last issue content contains {string}")]
+fn last_issue_content_contains(world: &mut MothWorld, expected: String) {
+    world.set_current_dir();
+    let id = world.last_issue_id.as_ref().expect("No issue ID");
+    let config = Config::load().expect("Failed to load config");
+    let store = Store::new(config).expect("Failed to create store");
+    let issue = store.find(id).expect("Failed to find issue");
+    let content = std::fs::read_to_string(&issue.path).expect("Failed to read issue file");
+    assert!(
+        content.contains(&expected),
+        "Expected issue content to contain '{}', got: {}",
+        expected,
+        content
+    );
+}

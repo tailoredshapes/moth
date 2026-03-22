@@ -87,6 +87,10 @@ moth show
 # Edit issue content
 moth edit x7k2m
 
+# Update issue description from stdin (replaces entire content)
+echo "Updated specification" | moth update x7k2m
+echo "New description" | moth update   # updates current issue
+
 # Delete issue
 moth rm x7k2m
 
@@ -119,6 +123,7 @@ moth report --since HEAD~10
 | `moth done [id]` | Move issue to `statuses[-1]` (current issue if no ID) |
 | `moth mv <id> <status>` | Move issue to any status |
 | `moth edit <id>` | Open issue in editor |
+| `moth update [id]` | Replace issue description with stdin content (current issue if no ID) |
 | `moth rm <id>` | Delete an issue |
 
 ### Priority Ordering

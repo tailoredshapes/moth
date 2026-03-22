@@ -203,3 +203,20 @@ fn user_installs_hook_force(world: &mut MothWorld) {
 fn user_uninstalls_hook(world: &mut MothWorld) {
     world.last_result = Some(cmd::hook::uninstall().map(|_| ()));
 }
+
+// Update commands
+#[when(expr = "the user updates the current issue with {string}")]
+fn user_updates_current_issue(world: &mut MothWorld, content: String) {
+    world.last_result = Some(cmd::update::run(None, content).map(|_| ()));
+}
+
+#[when(expr = "the user updates the last created issue with {string}")]
+fn user_updates_last_issue(world: &mut MothWorld, content: String) {
+    let id = world.last_issue_id.clone().expect("No issue ID available");
+    world.last_result = Some(cmd::update::run(Some(&id), content).map(|_| ()));
+}
+
+#[when(expr = "the user updates issue {string} with {string}")]
+fn user_updates_issue_by_id(world: &mut MothWorld, id: String, content: String) {
+    world.last_result = Some(cmd::update::run(Some(&id), content).map(|_| ()));
+}

@@ -155,6 +155,12 @@ enum Commands {
         message: String,
     },
 
+    #[command(about = "Update issue description from stdin")]
+    Update {
+        #[arg(help = "Issue ID (full or partial, defaults to current)")]
+        id: Option<String>,
+    },
+
     #[command(about = "Create CLAUDE.md with moth agent guide for LLM assistants")]
     Claude {
         #[arg(long, help = "Overwrite existing CLAUDE.md")]
@@ -280,6 +286,14 @@ fn main() {
         Commands::Completions { shell } => {
             generate_completions(&shell);
             return;
+        }
+        Commands::Update { id } => {
+            use std::io::Read;
+            let mut content = String::new();
+            io::stdin()
+                .read_to_string(&mut content)
+                .expect("Failed to read from stdin");
+            cmd::update::run(id.as_deref(), content)
         }
         Commands::Prefix { message } => cmd::prefix::check(&message),
         Commands::Claude { force, append } => {
