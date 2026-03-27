@@ -46,6 +46,27 @@ sudo apt install moth
 
 Supported architectures: `amd64`, `arm64`
 
+### Nix flake
+
+```nix
+{ pkgs ? import <nixpkgs> {} }:
+
+let 
+# ... other stuff
+
+  moth = (builtins.getFlake "github:"tailoredshapes/moth)
+      .packages.${pkgs.system}.default;
+
+in pkgs.mkShellNoCC {
+
+  buildInputs = [
+    # ... more other stuff
+    moth
+  ];
+}
+
+```
+
 ### From Source
 
 ```bash
