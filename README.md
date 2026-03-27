@@ -54,7 +54,7 @@ Supported architectures: `amd64`, `arm64`
 let 
 # ... other stuff
 
-  moth = (builtins.getFlake "github:"tailoredshapes/moth)
+  moth = (builtins.getFlake "github:tailoredshapes/moth")
       .packages.${pkgs.system}.default;
 
 in pkgs.mkShellNoCC {

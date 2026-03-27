@@ -27,8 +27,8 @@
           };
 
           # If you need native deps later:
-          # nativeBuildInputs = [ pkgs.pkg-config ];
-          # buildInputs = [ pkgs.openssl ];
+          nativeBuildInputs = [ pkgs.pkg-config ];
+          buildInputs = [ pkgs.openssl ];
 
           meta = with pkgs.lib; {
             description = "moth";
