@@ -3,7 +3,7 @@
 }:
 
 let
-  moth = (builtins.getFlake "github:tailoredshapes/moth")
+  moth = (builtins.getFlake (toString ./.))
       .packages.${pkgs.system}.default;
 
 in pkgs.mkShellNoCC {

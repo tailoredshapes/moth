@@ -311,7 +311,7 @@ fn test_full_workflow() {
     let mut issues = store.issues_by_status("ready").unwrap();
     assert_eq!(issues.len(), 2);
 
-    issues.sort_by(|a, b| a.severity.cmp(&b.severity));
+    issues.sort_by_key(|a| a.severity);
     let high_priority_id = issues[0].id.clone();
 
     cmd::start::run(&high_priority_id).unwrap();
