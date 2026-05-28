@@ -1,3 +1,4 @@
+pub mod agent_help;
 pub mod claude;
 pub mod done;
 pub mod edit;

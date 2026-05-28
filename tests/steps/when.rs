@@ -220,3 +220,15 @@ fn user_updates_last_issue(world: &mut MothWorld, content: String) {
 fn user_updates_issue_by_id(world: &mut MothWorld, id: String, content: String) {
     world.last_result = Some(cmd::update::run(Some(&id), content).map(|_| ()));
 }
+
+#[when(expr = "the user runs moth with {string}")]
+fn user_runs_moth_with_args(world: &mut MothWorld, args: String) {
+    if args == "--agent-help" {
+        use clap::CommandFactory;
+        let mut cmd = moth::cli::Cli::command();
+        let result = cmd::agent_help::run(&mut cmd);
+        world.last_result = Some(result);
+    } else {
+        world.last_result = Some(Err(anyhow::anyhow!("Unsupported args: {}", args)));
+    }
+}

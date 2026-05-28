@@ -501,3 +501,23 @@ fn test_e2e_new_with_start_flag_moves_to_doing() {
     let name = file_name.to_string_lossy();
     assert!(name.contains("test_issue_with_start"));
 }
+
+#[test]
+#[serial]
+fn test_e2e_agent_help() {
+    let temp = setup_test_env();
+    let temp_path = temp.path();
+
+    let (success, stdout, stderr) = run_moth_cmd(&["--agent-help"], temp_path);
+
+    assert!(success, "Command failed: {}", stderr);
+    assert!(stdout.contains("moth"));
+    assert!(stdout.contains("A simple file-based issue tracker"));
+    assert!(stdout.contains("Options:"));
+    assert!(stdout.contains("--agent-help"));
+    assert!(stdout.contains("Subcommands:"));
+    assert!(stdout.contains("init"));
+    assert!(stdout.contains("new"));
+    assert!(stdout.contains("ls"));
+    assert!(stdout.contains("show"));
+}
