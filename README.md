@@ -165,6 +165,12 @@ moth report --since HEAD~10
 | `moth hook install [--force] [--append]` | Install prepare-commit-msg hook |
 | `moth hook uninstall` | Remove moth git hook |
 | `moth report [--since] [--until]` | Generate CSV report of story changes |
+### AI & Agent Help
+
+| Command | Description |
+|---------|-------------|
+| `moth claude` | Interactive AI assistance via Claude |
+| `moth --agent-help` | Recursively list all commands for agents |
 
 ## Configuration
 
